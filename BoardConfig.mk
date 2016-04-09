@@ -42,9 +42,14 @@ BOARD_SUPPRESS_SECURE_ERASE := true
 # TWRP Build Flags
 TW_THEME := portrait_hdpi
 TW_EXCLUDE_DEFAULT_USB_INIT := true
+TW_HAS_DOWNLOAD_MODE := true
 TW_INCLUDE_CRYPTO := true
+#TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_NO_EXFAT_FUSE := true
 TARGET_RECOVERY_DEVICE_MODULES := chargeled
 
 # Vendor Init
 TARGET_PLATFORM_DEVICE_BASE := /devices/soc/
+TARGET_UNIFIED_DEVICE := true
+TARGET_INIT_VENDOR_LIB := libinit_msm
+TARGET_LIBINIT_DEFINES_FILE := device/htc/pme/recovery/init/init_pme.cpp
