@@ -12,12 +12,24 @@ on fs
     write /sys/class/android_usb/android0/iProduct ${ro.product.model}
     write /sys/class/android_usb/android0/iSerial ${ro.serialno}
 
+    # needed to make qseecomd work in recovery
+    chmod 0660 /dev/qseecom
+    chown system drmrpc /dev/qseecom
+    chmod 0664 /dev/ion
+    chown system system /dev/ion
+
+    # Pull props from build.prop
+    start setprops
+
 on offmode_charging
     start detect_key
     start offmode_charging
 
 on boot
     start chargeled
+
+on property:ro.crypto.state=encrypted
+    start sbinqseecomd
 
 on property:sys.usb.config=none
     stop adbd
@@ -60,6 +72,21 @@ on property:sys.usb.config=mtp,adb
     start adbd
     write /sys/devices/platform/android_usb/usb_function_switch 131
     setprop sys.usb.state ${sys.usb.config}
+
+# separate copy needed to use /sbin/linker64 instead of /system/bin/linker64
+service sbinqseecomd /sbin/qseecomd
+    oneshot
+    disabled
+    user root
+    group root
+    seclabel u:r:recovery:s0
+
+service setprops /sbin/setprops.sh
+    oneshot
+    disabled
+    user root
+    group root
+    seclabel u:r:recovery:s0
 
 service chargeled /sbin/chargeled
     disabled
