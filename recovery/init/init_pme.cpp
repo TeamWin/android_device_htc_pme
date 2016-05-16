@@ -49,16 +49,20 @@ void init_msm_properties(unsigned long msm_id, unsigned long msm_ver, char *boar
 
     if (strstr(bootmid, "2PS620000")) {
         /* Europe (PME_UHL) */
+        property_set("ro.build.product", "htc_pmeuhl");
         property_set("ro.product.model", "HTC 10");
     } else if (strstr(bootmid, "2PS640000")) {
         /* Sprint (PME_WHL) */
+        property_set("ro.build.product", "htc_pmewhl");
         property_set("ro.product.model", "2PS64");
     } else if (strstr(bootmid, "2PS650000")) {
         /* AT&T/T-Mobile/Verizon (PME_WL) */
+        property_set("ro.build.product", "htc_pmewl");
         // property_set("ro.product.model", "HTC6545LVW"); Verizon-only model, can't use since model ID matches GSM variants
         property_set("ro.product.model", "HTC 10");
     } else {
         /* GSM (PME_UL) */
+        property_set("ro.build.product", "htc_pmeul");
         property_set("ro.product.model", "HTC 10");
     }
 
