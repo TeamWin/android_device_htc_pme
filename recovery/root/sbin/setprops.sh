@@ -17,12 +17,10 @@ mount -t ext4 -o ro /dev/block/bootdevice/by-name/system /system
 # Set variables based on props
 # PROP_NAME=`cat /system/build.prop | grep ro.prop.name | cut -d'=' -f2` # This is another way to do it
 BUILD_FINGERPRINT=`sed '/^\#/d' /system/build.prop | grep ro.build.fingerprint  | tail -n 1 | sed 's/^.*=//'`
-BUILD_PRODUCT=`sed '/^\#/d' /system/build.prop | grep ro.build.product  | tail -n 1 | sed 's/^.*=//'`
 PRODUCT_DEVICE=`sed '/^\#/d' /system/build.prop | grep ro.product.device  | tail -n 1 | sed 's/^.*=//'`
 
 # Set props to systm/build.prop values
 setprop ro.build.fingerprint $BUILD_FINGERPRINT
-setprop ro.build.product $BUILD_PRODUCT
 setprop ro.product.device $PRODUCT_DEVICE
 
 # Unmount system
