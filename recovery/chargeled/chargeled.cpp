@@ -55,7 +55,7 @@ enum {
 };
 
 struct sysfs_string_enum_map {
-    char* str;
+    const char* str;
     int val;
 } battery_status_map[] = {
     { "Unknown", BATTERY_STATUS_UNKNOWN },
