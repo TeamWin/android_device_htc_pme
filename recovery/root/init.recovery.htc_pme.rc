@@ -1,16 +1,8 @@
+import init.recovery.htc_decrypt.rc
+
 on init
     # Load Tuxera exfat module
     insmod /system/lib/modules/texfat.ko
-
-on fs
-    # Pull props from build.prop
-    start setprops
-
-    # needed to make qseecomd work in recovery
-    chmod 0660 /dev/qseecom
-    chown system drmrpc /dev/qseecom
-    chmod 0664 /dev/ion
-    chown system system /dev/ion
 
 on offmode_charging
     start detect_key
@@ -19,31 +11,9 @@ on offmode_charging
 on boot
     start chargeled
 
-on property:ro.crypto.state=encrypted
-    start sbinqseecomd
-
-# separate copy needed to use /sbin/linker64 instead of /system/bin/linker64
-service sbinqseecomd /sbin/qseecomd
-    oneshot
-    disabled
-    user root
-    group root
-    seclabel u:r:recovery:s0
-
-service setprops /sbin/setprops.sh
-    oneshot
-    disabled
-    user root
-    group root
-    seclabel u:r:recovery:s0
-
 service chargeled /sbin/chargeled
     disabled
     seclabel u:r:healthd:s0
-
-service choice_fn /sbin/choice_fn
-    seclabel u:r:choice_fn:s0
-    oneshot
 
 service detect_key /sbin/detect_key
     disabled

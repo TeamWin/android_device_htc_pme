@@ -25,7 +25,7 @@ BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 us
 
 BOARD_KERNEL_BASE := 0x80000000
 BOARD_KERNEL_PAGESIZE := 4096
-BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x02200000 --tags_offset 0x02000000 --board recovery:0
+BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100 --board recovery:0
 TARGET_PREBUILT_KERNEL := device/htc/pme/kernel
 
 BOARD_BOOTIMAGE_PARTITION_SIZE := 67108864
@@ -41,8 +41,7 @@ BOARD_HAS_NO_SELECT_BUTTON := true
 BOARD_SUPPRESS_SECURE_ERASE := true
 #TARGET_USES_LOGD := true
 
-# Keymaster - Wait for qseecom to load
-TARGET_KEYMASTER_WAIT_FOR_QSEE := true
+# Keymaster
 TARGET_HW_DISK_ENCRYPTION := true
 
 # TWRP Build Flags
@@ -50,15 +49,15 @@ TW_THEME := portrait_hdpi
 TW_EXCLUDE_DEFAULT_USB_INIT := true
 TW_HAS_DOWNLOAD_MODE := true
 TW_INCLUDE_CRYPTO := true
-#TW_INCLUDE_NTFS_3G := true
+TW_CRYPTO_USE_SYSTEM_VOLD := qseecomd
+TW_INCLUDE_NTFS_3G := true
 #TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_NO_EXFAT_FUSE := true
 TARGET_RECOVERY_QCOM_RTC_FIX := true
-TARGET_RECOVERY_DEVICE_MODULES := chargeled libbinder libgui libui libEGL libGLES_trace libGLESv2 libprotobuf-cpp-lite libsync # twrpdec
-TW_RECOVERY_ADDITIONAL_RELINK_FILES := $(OUT)/system/lib64/libbinder.so $(OUT)/system/lib64/libgui.so $(OUT)/system/lib64/libui.so $(OUT)/system/lib64/libEGL.so $(OUT)/system/lib64/libGLES_trace.so $(OUT)/system/lib64/libGLESv2.so $(OUT)/system/lib64/libprotobuf-cpp-lite.so $(OUT)/system/lib64/libsync.so # $(OUT)/recovery/root/sbin/twrpdec
+TARGET_RECOVERY_DEVICE_MODULES := chargeled # strace twrpdec
+#TW_RECOVERY_ADDITIONAL_RELINK_FILES := $(OUT)/system/xbin/strace $(OUT)/recovery/root/sbin/twrpdec
 #TWRP_INCLUDE_LOGCAT := true
 
 # Vendor Init
+TARGET_INIT_VENDOR_LIB := libinit_pme
 TARGET_UNIFIED_DEVICE := true
-TARGET_INIT_VENDOR_LIB := libinit_msm
-TARGET_LIBINIT_DEFINES_FILE := device/htc/pme/recovery/init/init_pme.cpp

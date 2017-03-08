@@ -1,5 +1,5 @@
 # mount point   fstype  device					device2			flags
-/system		ext4	/dev/block/bootdevice/by-name/system
+/system		ext4	/dev/block/bootdevice/by-name/system				
 /system_image	emmc	/dev/block/bootdevice/by-name/system				flags=flashimg=1
 /cache		ext4	/dev/block/bootdevice/by-name/cache
 /data		ext4	/dev/block/bootdevice/by-name/userdata				flags=encryptable=/dev/block/bootdevice/by-name/extra
