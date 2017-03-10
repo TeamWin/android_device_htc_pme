@@ -42,6 +42,26 @@
 
 #define DEV_BLOCK_SYSTEM "/dev/block/bootdevice/by-name/system"
 
+
+#ifdef GETPROP_RETURNS_STRING
+std::string my_property_get(const char* name)
+{
+    return property_get(name);
+}
+
+int my_property_get(const char *key, char *value)
+{
+    std::string propvalue;
+    propvalue = property_get(key);
+    strcpy(value, propvalue.c_str());
+
+    return propvalue.length();
+}
+
+#define property_get my_property_get
+#endif // GETPROP_RETURNS_STRING
+
+
 void set_props_from_file(const char *filename)
 {
     int IsSet_ro_product_device = 0;
@@ -77,15 +97,9 @@ void set_props_from_file(const char *filename)
     }
 
     if (!IsSet_ro_product_device) {
-#ifdef GETPROP_RETURNS_STRING
-        std::string propvalue;
-        propvalue = property_get("ro.build.product");
-        property_set("ro.product.device", propvalue.c_str());
-#else
         char propvalue[PROP_VALUE_MAX];
         property_get("ro.build.product", propvalue);
         property_set("ro.product.device", propvalue);
-#endif
     }
 }
 
@@ -113,30 +127,31 @@ void set_props_from_build(void)
 
 void vendor_load_properties()
 {
-    std::string platform;
-    std::string bootmid;
-    std::string device;
+    char platform[PROP_VALUE_MAX];
+    char bootmid[PROP_VALUE_MAX];
+    char device[PROP_VALUE_MAX];
+    int rc;
 
-    platform = property_get("ro.board.platform");
-    if (platform != ANDROID_TARGET)
+    rc = property_get("ro.board.platform", platform);
+    if (!rc || strncmp(platform, ANDROID_TARGET, PROP_VALUE_MAX))
         return;
 
-    bootmid = property_get("ro.boot.mid");
+    property_get("ro.boot.mid", bootmid);
 
-    if (bootmid == "2PS620000") {
+    if (strstr(bootmid, "2PS620000")) {
         /* Europe (PME_UHL) */
         property_set("ro.build.product", "htc_pmeuhl");
         property_set("ro.product.model", "HTC 10");
-    } else if (bootmid == "2PS640000") {
+    } else if (strstr(bootmid, "2PS640000")) {
         /* Sprint (PME_WHL) */
         property_set("ro.build.product", "htc_pmewhl");
         property_set("ro.product.model", "2PS64");
-    } else if (bootmid == "2PS650000") {
+    } else if (strstr(bootmid, "2PS650000")) {
         /* AT&T/T-Mobile/Verizon (PME_WL) */
         property_set("ro.build.product", "htc_pmewl");
         // property_set("ro.product.model", "HTC6545LVW"); Verizon-only model, can't use since model ID matches GSM variants
         property_set("ro.product.model", "HTC 10");
-    } else if (bootmid == "2PS670000") {
+    } else if (strstr(bootmid, "2PS670000")) {
         /* KDDI Japan (PME_UHLJAPAN) */
         property_set("ro.build.product", "htc_pmeuhljapan");
         property_set("ro.product.model", "HTV32");
@@ -148,6 +163,6 @@ void vendor_load_properties()
 
     set_props_from_build();
 
-    device = property_get("ro.product.device");
-    ERROR("Found bootmid %s setting build properties for %s device\n", bootmid.c_str(), device.c_str());
+    property_get("ro.product.device", device);
+    ERROR("Found bootmid %s setting build properties for %s device\n", bootmid, device);
 }
