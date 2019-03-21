@@ -1,14 +1,12 @@
-import init.recovery.qcom_decrypt.rc
-
-on init
-    # Load Tuxera exfat module
-    insmod /system/lib/modules/texfat.ko
+import init.recovery.qcom.rc
 
 on offmode_charging
     start detect_key
     start offmode_charging
 
 on boot
+    export LD_PRELOAD /sbin/liblog_htc_sbin.so
+
     start chargeled
 
 service chargeled /sbin/chargeled
@@ -23,4 +21,3 @@ service detect_key /sbin/detect_key
 service offmode_charging /sbin/offmode_charging
     disabled
     seclabel u:r:healthd:s0
-
