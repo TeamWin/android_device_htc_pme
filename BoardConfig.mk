@@ -46,6 +46,11 @@ BOARD_SUPPRESS_SECURE_ERASE := true
 # Keymaster
 TARGET_HW_DISK_ENCRYPTION := true
 
+# Custom Platform Version and Security Patch
+# TWRP Defaults
+PLATFORM_VERSION := 16.1.0
+PLATFORM_SECURITY_PATCH := 2025-12-05
+
 # TWRP Build Flags
 TW_THEME := portrait_hdpi
 TW_EXCLUDE_DEFAULT_USB_INIT := true
