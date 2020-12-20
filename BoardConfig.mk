@@ -1,12 +1,15 @@
-# Vendor Init
+# OEM Info
 BOARD_VENDOR := htc
+
+# Default device path
+DEVICE_PATH := device/$(BOARD_VENDOR)/$(TARGET_DEVICE)
 
 # Bootloader
 TARGET_BOOTLOADER_BOARD_NAME := MSM8996
 TARGET_NO_BOOTLOADER := true
 
 # Platform
-TARGET_BOARD_PLATFORM := msm8996
+TARGET_BOARD_PLATFORM := $(shell echo $(TARGET_BOOTLOADER_BOARD_NAME) | tr  '[:upper:]' '[:lower:]')
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno530
 
 # Architecture
@@ -24,12 +27,29 @@ TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := generic
 
 # Kernel
-BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 user_debug=31 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 cma=16M@0-0xffffffff androidboot.hardware=htc_pme androidkey.dummy=1 androidboot.selinux=permissive
-
+BOARD_KERNEL_CMDLINE := \
+    androidboot.console=ttyHSL0 \
+    androidboot.hardware=htc_pme \
+    androidboot.selinux=permissive \
+    androidkey.dummy=1 \
+    cma=16M@0-0xffffffff \
+    console=ttyHSL0,115200,n8 \
+    ehci-hcd.park=3 \
+    lpm_levels.sleep_disabled=1 \
+    user_debug=31
+BOARD_KERNEL := recovery:0
 BOARD_KERNEL_BASE := 0x80000000
+BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
 BOARD_KERNEL_PAGESIZE := 4096
-BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100 --board recovery:0
-TARGET_PREBUILT_KERNEL := device/$(BOARD_VENDOR)/$(TARGET_DEVICE)/prebuilt/Image.gz-dtb
+BOARD_KERNEL_OFFSET := 0x00008000
+BOARD_KERNEL_RAMDISK_OFFSET := 0x01000000
+BOARD_KERNEL_TAGS_OFFSET := 0x00000100
+BOARD_MKBOOTIMG_ARGS := \
+    --board $(BOARD_KERNEL) \
+    --kernel_offset $(BOARD_KERNEL_OFFSET) \
+    --ramdisk_offset $(BOARD_KERNEL_RAMDISK_OFFSET) \
+    --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
+TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/$(BOARD_KERNEL_IMAGE_NAME)
 
 BOARD_BOOTIMAGE_PARTITION_SIZE := 67108864
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 67108864
@@ -43,7 +63,8 @@ TARGET_USERIMAGES_USE_F2FS := true
 BOARD_HAS_NO_SELECT_BUTTON := true
 BOARD_SUPPRESS_SECURE_ERASE := true
 
-# Keymaster
+# Encryption
+BOARD_USES_QCOM_DECRYPTION := true
 TARGET_HW_DISK_ENCRYPTION := true
 
 # Custom Platform Version and Security Patch
@@ -56,22 +77,26 @@ TW_THEME := portrait_hdpi
 TW_EXCLUDE_DEFAULT_USB_INIT := true
 TW_HAS_DOWNLOAD_MODE := true
 TW_INCLUDE_CRYPTO := true
-TW_CRYPTO_USE_SYSTEM_VOLD := qseecomd hwservicemanager servicemanager keymaster-3-0
+TW_CRYPTO_USE_SYSTEM_VOLD := \
+    qseecomd \
+    hwservicemanager \
+    servicemanager \
+    keymaster-3-0
 TW_INCLUDE_NTFS_3G := true
 TW_OVERRIDE_SYSTEM_PROPS := "ro.build.fingerprint"
 #TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_NO_EXFAT_FUSE := true
 TARGET_RECOVERY_QCOM_RTC_FIX := true
-TARGET_RECOVERY_DEVICE_MODULES := chargeled liblog_htc_sbin tzdata android.hidl.base@1.0
-TW_RECOVERY_ADDITIONAL_RELINK_FILES += $(TARGET_OUT)/usr/share/zoneinfo/tzdata $(TARGET_OUT)/lib64/android.hidl.base@1.0.so
+TARGET_RECOVERY_DEVICE_MODULES := android.hidl.base@1.0
+TW_RECOVERY_ADDITIONAL_RELINK_FILES += $(TARGET_OUT)/lib64/android.hidl.base@1.0.so
 TW_USE_TOOLBOX := true
 
 # TWRP Debug Flags
 #TWRP_EVENT_LOGGING := true
-#TARGET_USES_LOGD := true
-#TWRP_INCLUDE_LOGCAT := true
-#TARGET_RECOVERY_DEVICE_MODULES += debuggerd
-#TW_RECOVERY_ADDITIONAL_RELINK_FILES += $(TARGET_OUT_EXECUTABLES)/debuggerd
+TARGET_USES_LOGD := true
+TWRP_INCLUDE_LOGCAT := true
+TARGET_RECOVERY_DEVICE_MODULES += debuggerd
+TW_RECOVERY_ADDITIONAL_RELINK_FILES += $(TARGET_OUT_EXECUTABLES)/debuggerd
 #TARGET_RECOVERY_DEVICE_MODULES += strace
 #TW_RECOVERY_ADDITIONAL_RELINK_FILES += $(TARGET_OUT_OPTIONAL_EXECUTABLES)/strace
 #TARGET_RECOVERY_DEVICE_MODULES += twrpdec
